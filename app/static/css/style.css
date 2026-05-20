@@ -1,37 +1,72 @@
-body {
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+}
+
+body {
     font-family: Arial, sans-serif;
-    background-color: #f4f6f9;
+    background-color: #f3f4f6;
+    color: #111827;
 }
 
-.container {
-    width: 80%;
-    margin: 40px auto;
+.navbar {
+    background-color: #111827;
+    color: white;
+    padding: 20px 40px;
 }
 
-h1 {
-    text-align: center;
-    color: #333;
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.main-content {
+    padding: 40px;
+}
+
+.dashboard-header {
     margin-bottom: 40px;
+}
+
+.dashboard-header h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.dashboard-header p {
+    color: #6b7280;
+}
+
+.machines-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
 }
 
 .machine-card {
     background-color: white;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.machine-card h2 {
+.card-header {
+    margin-bottom: 20px;
+}
+
+.card-header h2 {
     color: #2563eb;
 }
 
-.machine-card ul {
-    padding-left: 20px;
+.users-list {
+    list-style: none;
 }
 
-.machine-card li {
-    margin-bottom: 8px;
+.users-list li {
+    background-color: #eff6ff;
+    color: #1d4ed8;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
 }

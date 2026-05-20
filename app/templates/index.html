@@ -1,38 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Report System</title>
+{% extends "base.html" %}
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}"
-    >
-</head>
-<body>
+{% block title %}
+Dashboard
+{% endblock %}
 
-    <div class="container">
+{% block content %}
 
-        <h1>Login Report System</h1>
+<div class="dashboard-header">
+    <h1>Machine Activity Dashboard</h1>
+    <p>Users currently connected to company machines.</p>
+</div>
 
-        {% for machine, users in report.items() %}
+<div class="machines-grid">
 
-            <div class="machine-card">
+    {% for machine, users in report.items() %}
 
+        <div class="machine-card">
+
+            <div class="card-header">
                 <h2>{{ machine }}</h2>
+            </div>
 
-                <ul>
-                    {% for user in users %}
-                        <li>{{ user }}</li>
-                    {% endfor %}
-                </ul>
+            <div class="card-body">
+
+                {% if users %}
+
+                    <ul class="users-list">
+                        {% for user in users %}
+                            <li>{{ user }}</li>
+                        {% endfor %}
+                    </ul>
+
+                {% else %}
+
+                    <p>No active users.</p>
+
+                {% endif %}
 
             </div>
 
-        {% endfor %}
+        </div>
 
-    </div>
+    {% endfor %}
 
-</body>
-</html>
+</div>
+
+{% endblock %}
