@@ -18,7 +18,13 @@ Dashboard
         <div class="machine-card">
 
             <div class="card-header">
+
                 <h2>{{ machine }}</h2>
+            
+                <span class="status">
+                    Online
+                </span>
+            
             </div>
 
             <div class="card-body">
@@ -33,7 +39,9 @@ Dashboard
 
                 {% else %}
 
-                    <p>No active users.</p>
+                <p class="empty-message">
+                    No active users.
+                </p>
 
                 {% endif %}
 
