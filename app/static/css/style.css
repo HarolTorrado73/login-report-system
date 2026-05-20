@@ -244,3 +244,77 @@ body {
 
     color: #38bdf8;
 }
+
+/* ACTIVITY TABLE */
+
+.activity-section {
+    margin-bottom: 40px;
+}
+
+.activity-table-card {
+    background: linear-gradient(
+        180deg,
+        #1e293b,
+        #111827
+    );
+
+    border: 1px solid rgba(255,255,255,0.05);
+
+    border-radius: 18px;
+
+    padding: 24px;
+}
+
+.section-header {
+    margin-bottom: 20px;
+}
+
+.section-header h2 {
+    font-size: 24px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    color: #94a3b8;
+}
+
+th {
+    text-align: left;
+    padding-bottom: 16px;
+}
+
+td {
+    padding: 14px 0;
+
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.success-status {
+    background-color: rgba(34,197,94,0.15);
+
+    color: #4ade80;
+
+    padding: 6px 12px;
+
+    border-radius: 999px;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.logout-status {
+    background-color: rgba(239,68,68,0.15);
+
+    color: #f87171;
+
+    padding: 6px 12px;
+
+    border-radius: 999px;
+
+    font-size: 13px;
+    font-weight: 600;
+}

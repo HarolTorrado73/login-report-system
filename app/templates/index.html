@@ -30,6 +30,70 @@ Dashboard
 
 </div>
 
+<div class="activity-section">
+
+    <div class="activity-table-card">
+
+        <div class="section-header">
+            <h2>Recent Login Activity</h2>
+        </div>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Machine</th>
+                    <th>IP Address</th>
+                    <th>Method</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for event in recent_activity %}
+
+                    <tr>
+
+                        <td>{{ event.user }}</td>
+
+                        <td>{{ event.machine }}</td>
+
+                        <td>{{ event.ip }}</td>
+
+                        <td>{{ event.method }}</td>
+
+                        <td>
+
+                            {% if event.type == "login" %}
+
+                                <span class="success-status">
+                                    Success
+                                </span>
+
+                            {% else %}
+
+                                <span class="logout-status">
+                                    Logout
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
 <div class="machines-grid">
 
     {% for machine, users in report.items() %}

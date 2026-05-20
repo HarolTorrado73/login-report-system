@@ -4,7 +4,8 @@ from flask import Blueprint, render_template
 
 from app.services.report_service import (
     generate_report,
-    generate_dashboard_stats
+    generate_dashboard_stats,
+    get_recent_activity     
 )
 
 main = Blueprint("main", __name__)
@@ -20,8 +21,11 @@ def home():
 
     stats = generate_dashboard_stats(report)
 
+    recent_activity = get_recent_activity(events)
+
     return render_template(
-        "index.html",
-        report=report,
-        stats=stats
-    )
+    "index.html",
+    report=report,
+    stats=stats,
+    recent_activity=recent_activity
+)

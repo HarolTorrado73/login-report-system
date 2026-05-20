@@ -44,3 +44,13 @@ def generate_dashboard_stats(report):
         "total_active_users": total_active_users,
         "total_sessions": total_sessions
     }
+
+def get_recent_activity(events):
+
+    ordered_events = sorted(
+        events,
+        key=get_event_date,
+        reverse=True
+    )
+
+    return ordered_events[:5]
