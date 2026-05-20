@@ -11,6 +11,25 @@ Dashboard
     <p>Users currently connected to company machines.</p>
 </div>
 
+<div class="stats-grid">
+
+    <div class="stat-card">
+        <h3>Total Active Users</h3>
+        <p>{{ stats.total_active_users }}</p>
+    </div>
+
+    <div class="stat-card">
+        <h3>Machines Monitored</h3>
+        <p>{{ stats.total_machines }}</p>
+    </div>
+
+    <div class="stat-card">
+        <h3>Active Sessions</h3>
+        <p>{{ stats.total_sessions }}</p>
+    </div>
+
+</div>
+
 <div class="machines-grid">
 
     {% for machine, users in report.items() %}

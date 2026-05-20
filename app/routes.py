@@ -2,7 +2,10 @@ import json
 
 from flask import Blueprint, render_template
 
-from app.services.report_service import generate_report
+from app.services.report_service import (
+    generate_report,
+    generate_dashboard_stats
+)
 
 main = Blueprint("main", __name__)
 
@@ -15,7 +18,10 @@ def home():
 
     report = generate_report(events)
 
+    stats = generate_dashboard_stats(report)
+
     return render_template(
         "index.html",
-        report=report
+        report=report,
+        stats=stats
     )

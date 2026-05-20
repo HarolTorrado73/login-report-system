@@ -22,3 +22,25 @@ def generate_report(events):
             machines[machine].discard(user)
 
     return machines
+
+def generate_dashboard_stats(report):
+
+    total_machines = len(report)
+
+    active_users = set()
+
+    for users in report.values():
+        active_users.update(users)
+
+    total_active_users = len(active_users)
+
+    total_sessions = sum(
+        len(users)
+        for users in report.values()
+    )
+
+    return {
+        "total_machines": total_machines,
+        "total_active_users": total_active_users,
+        "total_sessions": total_sessions
+    }
