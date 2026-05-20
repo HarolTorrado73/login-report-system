@@ -94,6 +94,30 @@ Dashboard
 
 </div>
 
+<div class="charts-grid">
+
+    <div class="chart-card">
+
+        <div class="section-header">
+            <h2>Login Activity</h2>
+        </div>
+
+        <canvas id="loginChart"></canvas>
+
+    </div>
+
+    <div class="chart-card">
+
+        <div class="section-header">
+            <h2>Session Distribution</h2>
+        </div>
+
+        <canvas id="sessionChart"></canvas>
+
+    </div>
+
+</div>
+
 <div class="machines-grid">
 
     {% for machine, users in report.items() %}
@@ -135,5 +159,93 @@ Dashboard
     {% endfor %}
 
 </div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+
+const loginChart = document.getElementById('loginChart');
+
+new Chart(loginChart, {
+    type: 'line',
+
+    data: {
+        labels: ['08:00', '09:00', '10:00', '11:00', '12:00'],
+
+        datasets: [{
+            label: 'Login Activity',
+
+            data: [4, 7, 5, 12, 9],
+
+            borderColor: '#38bdf8',
+
+            backgroundColor: 'rgba(56, 189, 248, 0.15)',
+
+            tension: 0.4,
+
+            fill: true
+        }]
+    },
+
+    options: {
+        responsive: true,
+
+        plugins: {
+            legend: {
+                labels: {
+                    color: 'white'
+                }
+            }
+        },
+
+        scales: {
+            x: {
+                ticks: {
+                    color: '#94a3b8'
+                }
+            },
+
+            y: {
+                ticks: {
+                    color: '#94a3b8'
+                }
+            }
+        }
+    }
+});
+
+
+const sessionChart = document.getElementById('sessionChart');
+
+new Chart(sessionChart, {
+    type: 'doughnut',
+
+    data: {
+        labels: ['Active', 'Inactive'],
+
+        datasets: [{
+            data: [12, 4],
+
+            backgroundColor: [
+                '#38bdf8',
+                '#1e293b'
+            ]
+        }]
+    },
+
+    options: {
+        plugins: {
+            legend: {
+                labels: {
+                    color: 'white'
+                }
+            }
+        }
+    }
+});
+
+</script>
 
 {% endblock %}

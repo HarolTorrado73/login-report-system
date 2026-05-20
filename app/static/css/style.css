@@ -318,3 +318,32 @@ td {
     font-size: 13px;
     font-weight: 600;
 }
+
+/* CHARTS */
+
+.charts-grid {
+    display: grid;
+
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(350px, 1fr)
+    );
+
+    gap: 25px;
+
+    margin-bottom: 40px;
+}
+
+.chart-card {
+    background: linear-gradient(
+        180deg,
+        #1e293b,
+        #111827
+    );
+
+    border: 1px solid rgba(255,255,255,0.05);
+
+    border-radius: 18px;
+
+    padding: 24px;
+}
