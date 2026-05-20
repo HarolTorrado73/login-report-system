@@ -10,19 +10,62 @@
         rel="stylesheet"
         href="{{ url_for('static', filename='css/style.css') }}"
     >
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <nav class="navbar">
-        <div class="logo">
-            Login Report System
-        </div>
-    </nav>
+    <aside class="sidebar">
 
-    <main class="main-content">
-        {% block content %}
-        {% endblock %}
-    </main>
+        <div class="sidebar-logo">
+            CYBERGUARD
+        </div>
+
+        <nav class="sidebar-menu">
+
+            <a href="#" class="active">
+                Dashboard
+            </a>
+
+            <a href="#">
+                Machines
+            </a>
+
+            <a href="#">
+                Sessions
+            </a>
+
+            <a href="#">
+                Reports
+            </a>
+
+            <a href="#">
+                Settings
+            </a>
+
+        </nav>
+
+    </aside>
+
+    <div class="app-container">
+
+        <header class="topbar">
+
+            <div>
+                <h2>Admin Portal</h2>
+            </div>
+
+        </header>
+
+        <main class="main-content">
+            {% block content %}
+            {% endblock %}
+        </main>
+
+    </div>
 
 </body>
 </html>
