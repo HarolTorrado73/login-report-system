@@ -4,24 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Report System</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
 </head>
 <body>
 
-    <h1>Login Report System</h1>
+    <div class="container">
 
-    {% for machine, users in report.items() %}
+        <h1>Login Report System</h1>
 
-        <div>
-            <h2>{{ machine }}</h2>
+        {% for machine, users in report.items() %}
 
-            <ul>
-                {% for user in users %}
-                    <li>{{ user }}</li>
-                {% endfor %}
-            </ul>
-        </div>
+            <div class="machine-card">
 
-    {% endfor %}
+                <h2>{{ machine }}</h2>
+
+                <ul>
+                    {% for user in users %}
+                        <li>{{ user }}</li>
+                    {% endfor %}
+                </ul>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
 
 </body>
 </html>

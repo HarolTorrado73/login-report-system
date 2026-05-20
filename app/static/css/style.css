@@ -1,0 +1,37 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f9;
+}
+
+.container {
+    width: 80%;
+    margin: 40px auto;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 40px;
+}
+
+.machine-card {
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.machine-card h2 {
+    color: #2563eb;
+}
+
+.machine-card ul {
+    padding-left: 20px;
+}
+
+.machine-card li {
+    margin-bottom: 8px;
+}
