@@ -9,7 +9,17 @@
 
     <h1>Login Report System</h1>
 
-    <p>System running successfully.</p>
+    {% for machine, users in report.items() %}
+
+        <h2>{{ machine }}</h2>
+
+        <ul>
+            {% for user in users %}
+                <li>{{ user }}</li>
+            {% endfor %}
+        </ul>
+
+    {% endfor %}
 
 </body>
 </html>
