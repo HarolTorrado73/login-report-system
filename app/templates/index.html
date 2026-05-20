@@ -11,13 +11,15 @@
 
     {% for machine, users in report.items() %}
 
-        <h2>{{ machine }}</h2>
+        <div>
+            <h2>{{ machine }}</h2>
 
-        <ul>
-            {% for user in users %}
-                <li>{{ user }}</li>
-            {% endfor %}
-        </ul>
+            <ul>
+                {% for user in users %}
+                    <li>{{ user }}</li>
+                {% endfor %}
+            </ul>
+        </div>
 
     {% endfor %}
 
