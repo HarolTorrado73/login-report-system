@@ -11,6 +11,7 @@ from app.services.report_service import (
     get_login_stats_by_day,
     get_session_distribution,
 )
+from app.services.events_service import add_event, get_events
 
 auth = Blueprint("auth", __name__)
 
