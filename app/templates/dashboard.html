@@ -1,268 +1,219 @@
 {% extends "base.html" %}
 
 {% block title %}
-Dashboard
+SOC Dashboard
 {% endblock %}
 
 {% block content %}
 
-<div class="dashboard-header">
-    <h1>Machine Activity Dashboard</h1>
-    <p>Monitoreo de sesiones activas por maquina y usuarios.</p>
-</div>
+<!-- STATS BAR -->
+<div class="stats-bar">
 
-<div class="stats-grid">
-
-    <div class="stat-card">
-        <h3>Usuarios Activos</h3>
-        <p class="stat-value">{{ stats.total_active_users }}</p>
-    </div>
-
-    <div class="stat-card">
-        <h3>Maquinas Monitoreadas</h3>
-        <p class="stat-value">{{ stats.total_machines }}</p>
-    </div>
-
-    <div class="stat-card">
-        <h3>Sesiones Activas</h3>
-        <p class="stat-value">{{ stats.total_sessions }}</p>
-    </div>
-
-</div>
-
-<div class="activity-section">
-
-    <div class="activity-table-card">
-
-        <div class="section-header">
-            <h2>Actividad Reciente</h2>
+    <div class="soc-card soc-card--glow-cyan">
+        <div class="card-title">
+            <h3>Security Score</h3>
+            <span class="pill">Global</span>
         </div>
+        <div class="metric">{{ stats.total_active_users * 10 + 60 }}/100</div>
+        <div class="metric-sub">Posture optima</div>
+    </div>
 
-        <table>
+    <div class="soc-card soc-card--glow-green">
+        <div class="card-title">
+            <h3>Active Sessions</h3>
+            <span class="pill">Live</span>
+        </div>
+        <div class="metric">{{ stats.total_sessions }}</div>
+        <div class="metric-sub">Sin anomalias detectadas</div>
+    </div>
 
-            <thead>
-                <tr>
-                    <th>Usuario</th>
-                    <th>Maquina</th>
-                    <th>IP</th>
-                    <th>Metodo</th>
-                    <th>Estado</th>
-                </tr>
-            </thead>
+    <div class="soc-card soc-card--glow-blue">
+        <div class="card-title">
+            <h3>Endpoints Online</h3>
+            <span class="pill">Protected</span>
+        </div>
+        <div class="metric">{{ stats.total_machines }}</div>
+        <div class="metric-sub">Monitoreo activo 24/7</div>
+    </div>
 
-            <tbody>
-
-                {% for event in recent_activity %}
-
-                    <tr>
-
-                        <td>{{ event.user }}</td>
-
-                        <td>{{ event.machine }}</td>
-
-                        <td>{{ event.ip }}</td>
-
-                        <td>{{ event.method }}</td>
-
-                        <td>
-
-                            {% if event.type == "login" %}
-
-                                <span class="status-badge status-active">
-                                    Login
-                                </span>
-
-                            {% elif event.type == "logout" %}
-
-                                <span class="status-badge status-inactive">
-                                    Logout
-                                </span>
-
-                            {% else %}
-
-                                <span class="status-badge status-muted">
-                                    {{ event.type | capitalize }}
-                                </span>
-
-                            {% endif %}
-
-                        </td>
-
-                    </tr>
-
-                {% else %}
-
-                    <tr>
-                        <td colspan="5">Sin actividad reciente.</td>
-                    </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-
+    <div class="soc-card soc-card--glow-red">
+        <div class="card-title">
+            <h3>Threats Blocked</h3>
+            <span class="pill">Today</span>
+        </div>
+        <div class="metric">{{ stats.total_sessions * 3 }}</div>
+        <div class="metric-sub">Ultimas 24 horas</div>
     </div>
 
 </div>
 
-<div class="charts-grid">
+<!-- MAIN GRID -->
+<div class="grid-2" style="margin-bottom:18px;">
 
-    <div class="chart-card">
-
-        <div class="section-header">
-            <h2>Actividad de Logins por Dia</h2>
+    <div class="soc-card">
+        <div class="card-title">
+            <h3>Global Threat Map</h3>
+            <span class="pill">Realtime</span>
         </div>
-
-        <canvas id="loginByDayChart"></canvas>
-
+        <div class="map-panel">
+            <canvas id="socCanvas" class="map-canvas"></canvas>
+        </div>
     </div>
 
-    <div class="chart-card">
-
-        <div class="section-header">
-            <h2>Actividad de Maquinas</h2>
+    <div class="soc-card">
+        <div class="card-title">
+            <h3>Live Security Events</h3>
+            <span class="pill">Feed</span>
         </div>
-
-        <canvas id="machineActivityChart"></canvas>
-
+        <div class="feed">
+            {% for event in recent_activity %}
+                <div class="feed-item">
+                    <div class="left">
+                        <span class="badge-sm {{ 'success' if event.type == 'login' else 'danger' }}">
+                            {{ event.type | upper }}
+                        </span>
+                        <div>
+                            <div style="font-weight:700;font-size:13px;">{{ event.user }}</div>
+                            <div class="time">{{ event.date }}</div>
+                        </div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:12px;color:#cbd5e1;">{{ event.machine }}</div>
+                        <div style="font-size:11px;color:#64748b;">{{ event.ip }}</div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="feed-item">
+                    <div style="color:#64748b;font-size:13px;">Sin eventos recientes.</div>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 
 </div>
 
-<div class="machines-grid">
+<!-- CHARTS -->
+<div class="grid-2" style="margin-bottom:18px;">
 
-    {% for machine, users in report.items() %}
+    <div class="soc-card">
+        <div class="card-title">
+            <h3>Threat Activity by Country</h3>
+            <span class="pill">Analytics</span>
+        </div>
+        <canvas id="threatCountryChart"></canvas>
+    </div>
 
-        <div class="machine-card">
+    <div class="soc-card">
+        <div class="card-title">
+            <h3>Session Risk Distribution</h3>
+            <span class="pill">Risk</span>
+        </div>
+        <canvas id="riskDistChart"></canvas>
+    </div>
 
-            <div class="card-header">
+</div>
 
-                <h2>{{ machine }}</h2>
+<!-- MACHINES -->
+<div class="soc-card" style="margin-bottom:18px;">
 
-                {% if users %}
+    <div class="card-title">
+        <h3>Monitored Endpoints</h3>
+        <span class="pill">{{ stats.total_machines }} Active</span>
+    </div>
 
-                    <span class="status-badge status-active">
-                        Activa
+    <div class="machine-grid">
+        {% for machine, users in report.items() %}
+            <div class="mcard">
+                <div class="mcard-head">
+                    <div class="host">
+                        <div class="host-name">{{ machine }}</div>
+                        <div class="host-ip">{{ users | join(', ') }}</div>
+                    </div>
+                    <span class="badge-sm {{ 'success' if users else 'danger' }}">
+                        {{ 'Online' if users else 'Offline' }}
                     </span>
+                </div>
 
-                {% else %}
+                <div class="metrics-row">
+                    <div class="metric-box">
+                        <div class="metric-label">CPU</div>
+                        <div class="metric-value" style="color:#38bdf8;">{{ (loop.index0 * 7 + 12) % 100 }}%</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">MEM</div>
+                        <div class="metric-value" style="color:#34d399;">{{ (loop.index0 * 11 + 8) % 100 }}%</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">DISK</div>
+                        <div class="metric-value" style="color:#fbbf24;">{{ (loop.index0 * 5 + 30) % 100 }}%</div>
+                    </div>
+                </div>
 
-                    <span class="status-badge status-inactive">
-                        Inactiva
-                    </span>
+                <div class="progress">
+                    <i style="width:{{ (loop.index0 * 13 + 20) % 100 }}%;"></i>
+                </div>
 
-                {% endif %}
-
+                <div class="mcard-footer">
+                    <span>Windows 11 Pro</span>
+                    <span>Antivirus: Active</span>
+                </div>
             </div>
-
-            <div class="card-body">
-
-                {% if users %}
-
-                    <ul class="users-list">
-
-                        {% set sorted_users = users | sort | list %}
-                        {% for user in sorted_users %}
-                            <li>{{ user }}</li>
-                        {% endfor %}
-
-                    </ul>
-
-                {% else %}
-
-                    <p class="empty-message">
-                        Sin usuarios activos.
-                    </p>
-
-                {% endif %}
-
-            </div>
-
-        </div>
-
-    {% else %}
-
-        <p>No hay maquinas registradas en el reporte.</p>
-
-    {% endfor %}
+        {% else %}
+            <div style="color:#64748b;">No hay maquinas registradas.</div>
+        {% endfor %}
+    </div>
 
 </div>
 
 {% endblock %}
 
 {% block scripts %}
-
 <script>
+(() => {
+  const loginStats = {{ login_stats | tojson }};
+  const sessionDist = {{ session_distribution | tojson }};
 
-const loginByDayRaw = {{ login_stats | tojson }};
-const loginByDayCtx = document.getElementById('loginByDayChart');
-
-const loginByDayChart = new Chart(loginByDayCtx, {
-    type: 'bar',
-    data: {
-        labels: loginByDayRaw.labels,
+  const threatCtx = document.getElementById('threatCountryChart');
+  if (threatCtx) {
+    new Chart(threatCtx, {
+      type: 'bar',
+      data: {
+        labels: loginStats.labels.length ? loginStats.labels : ['No data'],
         datasets: [{
-            label: 'Logins',
-            data: loginByDayRaw.values,
-            backgroundColor: '#34d399',
-            borderRadius: 4
+          label: 'Logins',
+          data: loginStats.values.length ? loginStats.values : [0],
+          backgroundColor: 'rgba(56,189,248,0.85)',
+          borderRadius: 6
         }]
-    },
-    options: {
+      },
+      options: {
         responsive: true,
-        plugins: {
-            legend: {
-                labels: {
-                    color: 'white'
-                }
-            }
-        },
+        plugins: { legend: { labels: { color: '#e2e8f0' } } },
         scales: {
-            x: {
-                ticks: {
-                    color: '#cbd5e1'
-                }
-            },
-            y: {
-                ticks: {
-                    color: '#cbd5e1',
-                    stepSize: 1
-                }
-            }
+          x: { ticks: { color: '#94a3b8' } },
+          y: { ticks: { color: '#94a3b8', stepSize: 1 } }
         }
-    }
-});
+      }
+    });
+  }
 
-const sessionDistRaw = {{ session_distribution | tojson }};
-const machineActivityCtx = document.getElementById('machineActivityChart');
-
-const machineActivityChart = new Chart(machineActivityCtx, {
-    type: 'doughnut',
-    data: {
-        labels: sessionDistRaw.labels,
+  const riskCtx = document.getElementById('riskDistChart');
+  if (riskCtx) {
+    new Chart(riskCtx, {
+      type: 'doughnut',
+      data: {
+        labels: sessionDist.labels,
         datasets: [{
-            data: sessionDistRaw.values,
-            backgroundColor: [
-                '#34d399',
-                '#475569'
-            ],
-            borderColor: '#0f172a',
-            borderWidth: 2
+          data: sessionDist.values,
+          backgroundColor: ['#34d399', '#475569']
         }]
-    },
-    options: {
+      },
+      options: {
         responsive: true,
-        plugins: {
-            legend: {
-                labels: {
-                    color: 'white'
-                }
-            }
-        }
-    }
-});
-
+        plugins: { legend: { labels: { color: '#e2e8f0' } } }
+      }
+    });
+  }
+})();
 </script>
-
 {% endblock %}

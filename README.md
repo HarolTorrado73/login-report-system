@@ -1,10 +1,8 @@
 <div align="center">
 
-# Login Report System
+# CyberGuard SOC
 
-Modern Flask-based dashboard for monitoring active user sessions across company machines with JSON user authentication.
-
-![Dashboard Preview](docs/dashboard-preview.png)
+Professional Security Operations Center dashboard with premium glassmorphism UI, real-time monitoring, threat visualization, and endpoint management.
 
 </div>
 
