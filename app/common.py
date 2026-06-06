@@ -1,3 +1,5 @@
+from collections import defaultdict, OrderedDict
+
 from flask import Blueprint, render_template
 
 from app.services.report_service import (
@@ -7,7 +9,6 @@ from app.services.report_service import (
     get_login_stats_by_day,
     get_session_distribution,
 )
-
 
 common = Blueprint("common", __name__)
 
