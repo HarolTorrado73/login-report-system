@@ -29,23 +29,23 @@
 
             <nav class="nav">
 
-                <a href="{{ url_for('auth.dashboard') }}" class="active">
+                <a href="{{ url_for('common.dashboard') }}" class="{% if request.endpoint == 'common.dashboard' %}active{% endif %}">
                     Dashboard
                 </a>
 
-                <a href="{{ url_for('auth.dashboard') }}">
+                <a href="{{ url_for('machines.machines_page') }}" class="{% if request.endpoint and request.endpoint.startswith('machines') %}active{% endif %}">
                     Machines
                 </a>
 
-                <a href="{{ url_for('auth.dashboard') }}">
+                <a href="{{ url_for('sessions.sessions_page') }}" class="{% if request.endpoint and request.endpoint.startswith('sessions') %}active{% endif %}">
                     Sessions
                 </a>
 
-                <a href="{{ url_for('auth.dashboard') }}">
+                <a href="{{ url_for('reports.reports_page') }}" class="{% if request.endpoint and request.endpoint.startswith('reports') %}active{% endif %}">
                     Reports
                 </a>
 
-                <a href="{{ url_for('auth.dashboard') }}">
+                <a href="{{ url_for('settings.settings_page') }}" class="{% if request.endpoint and request.endpoint.startswith('settings') %}active{% endif %}">
                     Settings
                 </a>
 
@@ -100,8 +100,7 @@
             <div class="toast-layer">
                 {% for category, message in messages %}
                     <div class="toast">
-                        <strong>{{ category | capitalize }}:</strong>
-                        {{ message }}
+                        <strong>{{ category | capitalize }}:</strong> {{ message }}
                     </div>
                 {% endfor %}
             </div>
