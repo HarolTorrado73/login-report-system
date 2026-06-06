@@ -8,7 +8,7 @@
 
     <link
         rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}"
+        href="{{ url_for('static', filename='css/soc.css') }}"
     >
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,66 +18,72 @@
 </head>
 <body>
 
-    <aside class="sidebar">
+    <div class="soc-root">
 
-        <div class="sidebar-logo">
-            CYBERGUARD
-        </div>
+        <aside class="soc-sidebar">
 
-        <nav class="sidebar-menu">
-
-            <a href="{{ url_for('auth.dashboard') }}" class="active">
-                Dashboard
-            </a>
-
-            <a href="{{ url_for('auth.dashboard') }}">
-                Machines
-            </a>
-
-            <a href="{{ url_for('auth.dashboard') }}">
-                Sessions
-            </a>
-
-            <a href="{{ url_for('auth.dashboard') }}">
-                Reports
-            </a>
-
-            <a href="{{ url_for('auth.dashboard') }}">
-                Settings
-            </a>
-
-        </nav>
-
-    </aside>
-
-    <div class="app-container">
-
-        <header class="topbar">
-
-            <div>
-                <h2>Admin Portal</h2>
+            <div class="brand">
+                <div class="brand-mark">C</div>
+                <div class="brand-name">CYBERGUARD</div>
             </div>
 
-            <div class="user-menu">
+            <nav class="nav">
+
+                <a href="{{ url_for('auth.dashboard') }}" class="active">
+                    Dashboard
+                </a>
+
+                <a href="{{ url_for('auth.dashboard') }}">
+                    Machines
+                </a>
+
+                <a href="{{ url_for('auth.dashboard') }}">
+                    Sessions
+                </a>
+
+                <a href="{{ url_for('auth.dashboard') }}">
+                    Reports
+                </a>
+
+                <a href="{{ url_for('auth.dashboard') }}">
+                    Settings
+                </a>
+
+            </nav>
+
+            <div class="user-chip">
+
+                <div>
+                    <div class="name">{{ user | default('Guest') }}</div>
+                    <div class="role">{{ role | default('viewer') | capitalize }}</div>
+                </div>
 
                 {% if user %}
-
-                    <span class="user-badge">
-                        {{ user }} ({{ role | capitalize }})
-                    </span>
-
-                    <a href="{{ url_for('auth.logout') }}" class="logout-btn">
-                        Cerrar Sesion
+                    <a href="{{ url_for('auth.logout') }}" class="logout">
+                        Logout
                     </a>
-
-                {% else %}
-
-                    <a href="{{ url_for('auth.login') }}" class="login-link">
-                        Iniciar Sesion
-                    </a>
-
                 {% endif %}
 
+            </div>
+
+        </aside>
+
+        <header class="soc-topbar">
+
+            <div class="status-dot">
+                <span>Security Operations Center</span>
+            </div>
+
+            <div>
+                {% if user %}
+                    <span style="font-size:13px;color:#94a3b8;">
+                        {{ user }} • {{ role | capitalize }}
+                    </span>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}" style="font-size:13px;color:#38bdf8;">
+                        Iniciar Sesion
+                    </a>
+                {% endif %}
             </div>
 
         </header>
@@ -91,23 +97,19 @@
 
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-
-            <div class="flash-messages">
-
+            <div class="toast-layer">
                 {% for category, message in messages %}
-
-                    <div class="flash flash-{{ category }}">
+                    <div class="toast">
+                        <strong>{{ category | capitalize }}:</strong>
                         {{ message }}
                     </div>
-
                 {% endfor %}
-
             </div>
-
         {% endif %}
     {% endwith %}
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/soc.js') }}"></script>
 
 {% block scripts %}
 {% endblock %}
