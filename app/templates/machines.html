@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}
+Machines - CyberGuard SOC
+{% endblock %}
+
+{% block content %}
+
+<div class="soc-card" style="margin-bottom:18px;">
+    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+            <input id="searchInput" type="text" placeholder="Buscar hostname, usuario o IP..." style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px 14px;border-radius:12px;width:260px;outline:none;">
+            <select id="statusFilter" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px 14px;border-radius:12px;outline:none;">
+                <option value="">Todos los estados</option>
+                {% for s in statuses %}
+                    <option value="{{ s }}">{{ s }}</option>
+                {% endfor %}
+            </select>
+            <select id="osFilter" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px 14px;border-radius:12px;outline:none;">
+                <option value="">Todos los SO</option>
+                {% for o in oss %}
+                    <option value="{{ o }}">{{ o }}</option>
+                {% endfor %}
+            </select>
+            <button id="viewToggle" style="background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.4);color:#38bdf8;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:700;">
+                {{ 'Tabla' if view == 'grid' else 'Grid' }}
+            </button>
+        </div>
+        <div style="color:#94a3b8;font-size:13px;">
+            <span id="resultCount">{{ machines|length }}</span> endpoints encontrados
+        </div>
+    </div>
+</div>
+
+<div id="gridView" style="display:{{ 'none' if view == 'table' else 'grid' }};" class="machine-grid">
+    {% for m in machines %}
+        <div class="mcard" data-hostname="{{ m.hostname }}" data-user="{{ m.user }}" data-ip="{{ m.ip }}" data-status="{{ m.status }}" data-os="{{ m.os }}">
+            <div class="mcard-head">
+                <div class="host">
+                    <div class="host-name">{{ m.hostname }}</div>
+                    <div class="host-ip">{{ m.ip }}</div>
+                </div>
+                <span class="badge-sm {{ 'success' if m.status == 'Online' else 'danger' }}">
+                    {{ m.status }}
+                </span>
+            </div>
+            <div style="font-size:12px;color:#cbd5e1;margin:6px 0;">{{ m.user }}</div>
+            <div class="metrics-row">
+                <div class="metric-box">
+                    <div class="metric-label">CPU</div>
+                    <div class="metric-value" style="color:#38bdf8;">{{ m.cpu }}</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">MEM</div>
+                    <div class="metric-value" style="color:#34d399;">{{ m.ram }}</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">DISK</div>
+                    <div class="metric-value" style="color:#fbbf24;">{{ m.disk }}</div>
+                </div>
+            </div>
+            <button onclick="openMachineDetails({{ m.hostname|tojson }})" style="margin-top:10px;width:100%;padding:8px;border-radius:10px;background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.4);color:#38bdf8;cursor:pointer;font-weight:700;">
+                Ver Detalles
+            </button>
+        </div>
+    {% else %}
+        <div style="color:#64748b;grid-column:1/-1;">No se encontraron máquinas.</div>
+    {% endfor %}
+</div>
+
+<div id="tableView" style="display:{{ 'block' if view == 'table' else 'none' }};">
+    <div class="soc-card" style="padding:0;overflow:hidden;">
+        <table class="soc-table">
+            <thead>
+                <tr>
+                    <th>Hostname</th>
+                    <th>Usuario</th>
+                    <th>IP</th>
+                    <th>Estado</th>
+                    <th>SO</th>
+                    <th>CPU</th>
+                    <th>RAM</th>
+                    <th>Riesgo</th>
+                    <th>Última conexión</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="machineTableBody">
+                {% for m in machines %}
+                    <tr data-hostname="{{ m.hostname }}" data-user="{{ m.user }}" data-ip="{{ m.ip }}" data-status="{{ m.status }}" data-os="{{ m.os }}">
+                        <td style="font-weight:700;">{{ m.hostname }}</td>
+                        <td>{{ m.user }}</td>
+                        <td style="font-family:monospace;">{{ m.ip }}</td>
+                        <td><span class="badge-sm {{ 'success' if m.status == 'Online' else 'danger' }}">{{ m.status }}</span></td>
+                        <td>{{ m.os }}</td>
+                        <td>{{ m.cpu }}</td>
+                        <td>{{ m.ram }}</td>
+                        <td><span style="color:{{ '#f87171' if m.risk == 'High' else '#fbbf24' if m.risk == 'Medium' else '#34d399' }};font-weight:800;">{{ m.risk }}</span></td>
+                        <td style="font-family:monospace;">{{ m.last_connection or '-' }}</td>
+                        <td>
+                            <button onclick='openMachineDetails({{ m.hostname|tojson }})' style="padding:6px 12px;border-radius:10px;background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.4);color:#38bdf8;cursor:pointer;font-weight:700;">
+                                Detalles
+                            </button>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="10" style="text-align:center;color:#64748b;">Sin resultados</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="machineModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);z-index:100;justify-content:center;align-items:center;">
+    <div class="soc-card" style="width:min(720px, 95vw);max-height:88vh;overflow-y:auto;padding:22px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <h2 style="margin:0;">Detalle del endpoint</h2>
+            <button onclick="closeMachineModal()" style="background:transparent;border:none;color:#e2e8f0;font-size:22px;cursor:pointer;">×</button>
+        </div>
+        <div id="modalBody">
+            <div style="color:#94a3b8;">Cargando...</div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const machinesData = {{ all_machines | tojson }};
+
+document.getElementById('viewToggle').addEventListener('click', () => {
+    const gv = document.getElementById('gridView');
+    const tv = document.getElementById('tableView');
+    if (gv.style.display === 'none') {
+        gv.style.display = 'grid';
+        tv.style.display = 'none';
+    } else {
+        gv.style.display = 'none';
+        tv.style.display = 'block';
+    }
+});
+
+function filterMachines() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const status = document.getElementById('statusFilter').value.toLowerCase();
+    const os = document.getElementById('osFilter').value.toLowerCase();
+    let count = 0;
+    document.querySelectorAll('#gridView .mcard, #tableView tbody tr').forEach(el => {
+        const matchQ = !q || ((el.dataset.hostname || '').toLowerCase().includes(q)) || ((el.dataset.user || '').toLowerCase().includes(q)) || ((el.dataset.ip || '').toLowerCase().includes(q));
+        const matchStatus = !status || (el.dataset.status || '').toLowerCase() === status;
+        const matchOS = !os || (el.dataset.os || '').toLowerCase().includes(os);
+        const ok = matchQ && matchStatus && matchOS;
+        el.style.display = ok ? '' : 'none';
+        if (ok) count++;
+    });
+    document.getElementById('resultCount').textContent = count;
+}
+
+['searchInput', 'statusFilter', 'osFilter'].forEach(id => document.getElementById(id).addEventListener('input', filterMachines));
+
+function openMachineDetails(hostname) {
+    const m = machinesData.find(x => x.hostname === hostname);
+    if (!m) return;
+    document.getElementById('modalBody').innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div><strong>Hostname:</strong><br>${m.hostname}</div>
+            <div><strong>Estado:</strong><br>${m.status}</div>
+            <div><strong>Usuario actual:</strong><br>${m.user}</div>
+            <div><strong>IP:</strong><br>${m.ip}</div>
+            <div><strong>MAC:</strong><br>${m.mac}</div>
+            <div><strong>Sistema operativo:</strong><br>${m.os}</div>
+            <div><strong>Antivirus:</strong><br>${m.antivirus}</div>
+            <div><strong>Última conexión:</strong><br>${m.last_connection || '-'}</div>
+            <div><strong>CPU:</strong><br>${m.cpu}</div>
+            <div><strong>RAM:</strong><br>${m.ram}</div>
+            <div><strong>Disco:</strong><br>${m.disk}</div>
+            <div><strong>Riesgo:</strong><br><span style="color:${m.risk === 'High' ? '#f87171' : m.risk === 'Medium' ? '#fbbf24' : '#34d399'}">${m.risk}</span></div>
+        </div>
+        <div style="margin-top:14px;">
+            <h3 style="color:#cbd5e1;">Sesiones recientes</h3>
+            <table class="soc-table">
+                <thead><tr><th>Usuario</th><th>Inicio</th><th>Fin</th><th>IP</th><th>Estado</th></tr></thead>
+                <tbody>
+                    ${(m.sessions || []).slice(-10).reverse().map(s => `<tr>
+                        <td>${s.user}</td>
+                        <td>${s.login}</td>
+                        <td>${s.logout || '-'}</td>
+                        <td>${s.ip || '-'}</td>
+                        <td><span class="badge-sm ${s.active ? 'success' : 'danger'}">${s.active ? 'Activa' : 'Finalizada'}</span></td>
+                    </tr>`).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+    document.getElementById('machineModal').style.display = 'flex';
+}
+
+function closeMachineModal() {
+    document.getElementById('machineModal').style.display = 'none';
+}
+
+document.getElementById('machineModal').addEventListener('click', (e) => {
+    if (e.target.id === 'machineModal') closeMachineModal();
+});
+</script>
+{% endblock %}
