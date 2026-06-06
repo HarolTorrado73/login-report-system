@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}
+Sessions - CyberGuard SOC
+{% endblock %}
+
+{% block content %}
+
+<div class="stats-bar">
+    <div class="soc-card soc-card--glow-cyan">
+        <div class="card-title"><h3>Total Sesiones</h3><span class="pill">Histórico</span></div>
+        <div class="metric">{{ sessions|length }}</div>
+    </div>
+    <div class="soc-card soc-card--glow-green">
+        <div class="card-title"><h3>Sesiones Activas</h3><span class="pill">Live</span></div>
+        <div class="metric">{{ active_count }}</div>
+    </div>
+    <div class="soc-card soc-card--glow-blue">
+        <div class="card-title"><h3>Sesiones Finalizadas</h3><span class="pill">Cerradas</span></div>
+        <div class="metric">{{ finished_count }}</div>
+    </div>
+    <div class="soc-card soc-card--glow-red">
+        <div class="card-title"><h3>Duración Promedio</h3><span class="pill">Minutos</span></div>
+        <div class="metric">{{ '%.0f' % (sessions|sum(attribute='duration') / (sessions|length if sessions|length > 0 else 1)) }}</div>
+    </div>
+</div>
+
+<div class="soc-card" style="margin-bottom:18px;">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <a href="{{ url_for('sessions.sessions_page', status='all') }}" style="padding:8px 14px;border-radius:10px;background:{{ 'rgba(56,189,248,0.25)' if status == 'all' else 'rgba(15,25,45,0.6)' }};border:1px solid rgba(120,180,255,0.25);color:#e2e8f0;text-decoration:none;font-weight:700;">Todas</a>
+            <a href="{{ url_for('sessions.sessions_page', status='active') }}" style="padding:8px 14px;border-radius:10px;background:{{ 'rgba(52,211,153,0.25)' if status == 'active' else 'rgba(15,25,45,0.6)' }};border:1px solid rgba(120,180,255,0.25);color:#e2e8f0;text-decoration:none;font-weight:700;">Activas</a>
+            <a href="{{ url_for('sessions.sessions_page', status='finished') }}" style="padding:8px 14px;border-radius:10px;background:{{ 'rgba(248,113,113,0.25)' if status == 'finished' else 'rgba(15,25,45,0.6)' }};border:1px solid rgba(120,180,255,0.25);color:#e2e8f0;text-decoration:none;font-weight:700;">Finalizadas</a>
+        </div>
+    </div>
+</div>
+
+<div class="soc-card" style="padding:0;overflow:hidden;">
+    <table class="soc-table">
+        <thead>
+            <tr>
+                <th>Usuario</th>
+                <th>Máquina</th>
+                <th>Login Time</th>
+                <th>Logout Time</th>
+                <th>Duración (min)</th>
+                <th>IP</th>
+                <th>Método</th>
+                <th>MFA</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in sessions %}
+                <tr>
+                    <td style="font-weight:700;">{{ s.user }}</td>
+                    <td>{{ s.machine }}</td>
+                    <td style="font-family:monospace;">{{ s.login_time }}</td>
+                    <td style="font-family:monospace;">{{ s.logout_time or '-' }}</td>
+                    <td>{{ s.duration }}</td>
+                    <td style="font-family:monospace;">{{ s.ip }}</td>
+                    <td>{{ s.method }}</td>
+                    <td><span class="badge-sm {{ 'success' if s.mfa == 'Enabled' else 'warning' }}">{{ s.mfa }}</span></td>
+                    <td><span class="badge-sm {{ 'success' if s.active else 'danger' }}">{{ 'Activa' if s.active else 'Finalizada' }}</span></td>
+                    <td>
+                        {% if s.active %}
+                            <button onclick="terminateSession('{{ s.user|tojson }}', '{{ s.machine|tojson }}')" style="padding:6px 12px;border-radius:10px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);color:#f87171;cursor:pointer;font-weight:700;">
+                                Terminar
+                            </button>
+                        {% else %}
+                            <span style="color:#64748b;">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="10" style="text-align:center;color:#64748b;">Sin sesiones registradas</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function terminateSession(user, machine) {
+    if (!confirm('¿Terminar sesión de ' + user + ' en ' + machine + '?')) return;
+    fetch("{{ url_for('sessions.terminate') }}", {
+        method: "POST",
+        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+        body: new URLSearchParams({user, machine})
+    }).then(r => r.json()).then(data => {
+        if (data.ok) location.reload();
+        else alert(data.error || 'No se pudo terminar la sesión');
+    });
+}
+</script>
+{% endblock %}
