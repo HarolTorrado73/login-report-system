@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}
+Settings - CyberGuard SOC
+{% endblock %}
+
+{% block content %}
+<div class="grid-2">
+  <div class="soc-card">
+    <div class="card-title"><h3>General</h3></div>
+    <form method="POST" action="{{ url_for('settings.settings_page') }}" style="display:flex;flex-direction:column;gap:12px;">
+      <input type="hidden" name="section" value="general">
+      <label style="font-size:13px;color:#94a3b8;">Nombre organización</label>
+      <input name="org_name" value="{{ settings.general.org_name }}" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px;border-radius:10px;">
+      <label style="font-size:13px;color:#94a3b8;">Zona horaria</label>
+      <input name="timezone" value="{{ settings.general.timezone }}" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px;border-radius:10px;">
+      <button type="submit" style="padding:10px;border-radius:10px;background:linear-gradient(90deg,#1d4ed8,#0ea5e9);border:none;color:white;font-weight:700;cursor:pointer;">Guardar General</button>
+    </form>
+  </div>
+
+  <div class="soc-card">
+    <div class="card-title"><h3>Seguridad</h3></div>
+    <form method="POST" action="{{ url_for('settings.settings_page') }}" style="display:flex;flex-direction:column;gap:12px;">
+      <input type="hidden" name="section" value="security">
+      <label style="font-size:13px;color:#94a3b8;">Política de contraseña</label>
+      <select name="password_policy" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px;border-radius:10px;">
+        <option value="standard" {{ 'selected' if settings.security.password_policy == 'standard' }}>Standard</option>
+        <option value="strict" {{ 'selected' if settings.security.password_policy == 'strict' }}>Strict</option>
+      </select>
+      <label style="font-size:13px;color:#94a3b8;">Timeout (min)</label>
+      <input type="number" name="session_timeout" value="{{ settings.security.session_timeout }}" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px;border-radius:10px;">
+      <button type="submit" style="padding:10px;border-radius:10px;background:linear-gradient(90deg,#1d4ed8,#0ea5e9);border:none;color:white;font-weight:700;cursor:pointer;">Guardar Seguridad</button>
+    </form>
+  </div>
+
+  <div class="soc-card">
+    <div class="card-title"><h3>MFA</h3></div>
+    <form method="POST" action="{{ url_for('settings.settings_page') }}" style="display:flex;flex-direction:column;gap:12px;">
+      <input type="hidden" name="section" value="mfa">
+      <label style="font-size:13px;color:#94a3b8;">Habilitar MFA</label>
+      <select name="enabled" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px;border-radius:10px;">
+        <option value="true" {{ 'selected' if settings.mfa.enabled else '' }}>Sí</option>
+        <option value="false" {{ 'selected' if not settings.mfa.enabled else '' }}>No</option>
+      </select>
+      <label style="font-size:13px;color:#94a3b8;">Métodos (coma separado)</label>
+      <input name="methods" value="{{ settings.mfa.methods|join(', ') }}" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px;border-radius:10px;">
+      <button type="submit" style="padding:10px;border-radius:10px;background:linear-gradient(90deg,#1d4ed8,#0ea5e9);border:none;color:white;font-weight:700;cursor:pointer;">Guardar MFA</button>
+    </form>
+  </div>
+
+  <div class="soc-card">
+    <div class="card-title"><h3>Notificaciones</h3></div>
+    <form method="POST" action="{{ url_for('settings.settings_page') }}" style="display:flex;flex-direction:column;gap:12px;">
+      <input type="hidden" name="section" value="notifications">
+      <label style="font-size:13px;color:#94a3b8;">Alertas email</label>
+      <select name="email_alerts" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px;border-radius:10px;">
+        <option value="true" {{ 'selected' if settings.notifications.email_alerts else '' }}>Habilitadas</option>
+        <option value="false" {{ 'selected' if not settings.notifications.email_alerts else '' }}>Deshabilitadas</option>
+      </select>
+      <label style="font-size:13px;color:#94a3b8;">Webhook Slack</label>
+      <input name="slack_webhook" value="{{ settings.notifications.slack_webhook }}" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px;border-radius:10px;">
+      <label style="font-size:13px;color:#94a3b8;">Umbral</label>
+      <input name="threshold" value="{{ settings.notifications.threshold }}" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px;border-radius:10px;">
+      <button type="submit" style="padding:10px;border-radius:10px;background:linear-gradient(90deg,#1d4ed8,#0ea5e9);border:none;color:white;font-weight:700;cursor:pointer;">Guardar Notificaciones</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

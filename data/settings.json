@@ -1,0 +1,29 @@
+{
+  "general": {
+    "org_name": "CyberGuard",
+    "timezone": "America/Bogota",
+    "language": "es",
+    "section": "general"
+  },
+  "security": {
+    "password_policy": "standard",
+    "session_timeout": 30,
+    "lockout_attempts": 5
+  },
+  "mfa": {
+    "enabled": true,
+    "methods": [
+      "TOTP",
+      "SMS"
+    ]
+  },
+  "notifications": {
+    "email_alerts": true,
+    "slack_webhook": "",
+    "threshold": "medium"
+  },
+  "audit": {
+    "retention_days": 90,
+    "export_enabled": true
+  }
+}
