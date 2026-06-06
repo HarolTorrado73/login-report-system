@@ -1,0 +1,29 @@
+[
+    {
+        "id": 1,
+        "username": "admin",
+        "password_hash": "scrypt:32768:8:1$2yX2bDAY6l0Hektv$4562009b637b1a6b63fc38dec4870885b26b51bf195af99e4ca41660b0129743552500f9cab2017e9e94b15148e265e88bbd1f5fa5c3c40ef9c151710037a229",
+        "email": "admin@loginreport.local",
+        "role": "admin",
+        "created_at": "2026-01-01 00:00:00",
+        "status": "active"
+    },
+    {
+        "id": 2,
+        "username": "analyst",
+        "password_hash": "scrypt:32768:8:1$HhbjvM7KrdcnWjX4$1d5f4b6f5d64d7270c824c69eb557fa5af5c5832b955abd2406f6c43e1bb239eba81d21e22c814768ee612e8e66ad7c25b21570dd1d6b9e7dbfb0e927e9ebaf6",
+        "email": "analyst@loginreport.local",
+        "role": "analyst",
+        "created_at": "2026-01-15 00:00:00",
+        "status": "active"
+    },
+    {
+        "id": 3,
+        "username": "viewer",
+        "password_hash": "scrypt:32768:8:1$Isd8CIXtOoobyxJQ$7b98e0a02042c25a38ab5cecff8d3aca8818ac1f8c0c82f18f0d2fdf32bdfa75fafd0e93116a2f8c6e59d11a43082fb3728acb1e263f5b3e013821f5d13e7948",
+        "email": "viewer@loginreport.local",
+        "role": "viewer",
+        "created_at": "2026-02-01 00:00:00",
+        "status": "inactive"
+    }
+]

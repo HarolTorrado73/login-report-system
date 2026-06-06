@@ -26,23 +26,23 @@
 
         <nav class="sidebar-menu">
 
-            <a href="#" class="active">
+            <a href="{{ url_for('auth.dashboard') }}" class="active">
                 Dashboard
             </a>
 
-            <a href="#">
+            <a href="{{ url_for('auth.dashboard') }}">
                 Machines
             </a>
 
-            <a href="#">
+            <a href="{{ url_for('auth.dashboard') }}">
                 Sessions
             </a>
 
-            <a href="#">
+            <a href="{{ url_for('auth.dashboard') }}">
                 Reports
             </a>
 
-            <a href="#">
+            <a href="{{ url_for('auth.dashboard') }}">
                 Settings
             </a>
 
@@ -58,6 +58,28 @@
                 <h2>Admin Portal</h2>
             </div>
 
+            <div class="user-menu">
+
+                {% if user %}
+
+                    <span class="user-badge">
+                        {{ user }} ({{ role | capitalize }})
+                    </span>
+
+                    <a href="{{ url_for('auth.logout') }}" class="logout-btn">
+                        Cerrar Sesion
+                    </a>
+
+                {% else %}
+
+                    <a href="{{ url_for('auth.login') }}" class="login-link">
+                        Iniciar Sesion
+                    </a>
+
+                {% endif %}
+
+            </div>
+
         </header>
 
         <main class="main-content">
@@ -66,6 +88,24 @@
         </main>
 
     </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+
+            <div class="flash-messages">
+
+                {% for category, message in messages %}
+
+                    <div class="flash flash-{{ category }}">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+    {% endwith %}
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 

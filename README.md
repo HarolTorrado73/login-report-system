@@ -2,7 +2,7 @@
 
 # Login Report System
 
-Modern Flask-based dashboard for monitoring active user sessions across company machines.
+Modern Flask-based dashboard for monitoring active user sessions across company machines with JSON user authentication.
 
 ![Dashboard Preview](docs/dashboard-preview.png)
 
@@ -12,24 +12,23 @@ Modern Flask-based dashboard for monitoring active user sessions across company 
 
 # Overview
 
-Login Report System is a lightweight monitoring platform designed to process login and logout events and display active user sessions in real time.
+Login Report System is a lightweight monitoring platform designed to process login and logout events, manage local JSON-based user authentication, and display active sessions in real time with dynamic charts.
 
-The application reads chronological event data, analyzes machine activity, and generates a clean dashboard interface showing connected users by workstation.
-
-This project was developed using professional Flask architecture patterns and modular backend organization practices.
+The application reads chronological event data, validates internal users, analyzes machine activity, and generates a clean dashboard with real graphics powered by Chart.js.
 
 ---
 
 # Dashboard Features
 
-- Active session tracking
-- Login/logout event processing
-- Machine-based monitoring
-- Dynamic Flask rendering
-- Responsive dashboard UI
-- Modular backend architecture
-- External JSON data source
-- Professional project structure
+- Secure JSON-based user authentication with werkzeug password hashes
+- Active session tracking per machine with chronological event processing
+- Real Chart.js visualizations (doughnut, bar, line) derived from real events
+- Anti-duplicate login guard per machine without logout precedence
+- Login/logout event processing with IP and method
+- Recent activity table with status badges
+- Responsive dark-mode dashboard UI
+- Modular backend architecture (blueprints + services)
+- External JSON data sources (events + users)
 
 ---
 
@@ -39,7 +38,8 @@ This project was developed using professional Flask architecture patterns and mo
 |---|---|---|
 | Python | HTML5 | Git |
 | Flask | CSS3 | GitHub |
-| Jinja2 | Responsive Layout | Virtual Environment |
+| Jinja2 | Chart.js | Virtual Environment |
+| Werkzeug | Responsive Layout | python-dotenv |
 
 ---
 
@@ -49,45 +49,48 @@ This project was developed using professional Flask architecture patterns and mo
 login-report-system/
 │
 ├── app/
-│   ├── __init__.py
-│   ├── routes.py
+│   ├── __init__.py          # Application factory
+│   ├── auth.py              # Login, logout, dashboard blueprint
+│   ├── common.py            # Shared routes blueprint
 │   │
 │   ├── services/
-│   │   └── report_service.py
+│   │   └── report_service.py  # Business logic + chart data
 │   │
 │   ├── templates/
-│   │   ├── base.html
-│   │   └── index.html
+│   │   ├── base.html        # Layout shell with sidebar and user menu
+│   │   ├── login.html       # Login form page
+│   │   └── dashboard.html   # Main dashboard with charts
 │   │
 │   └── static/
 │       └── css/
-│           └── style.css
+│           └── style.css    # Dark theme styles
 │
 ├── data/
-│   └── events.json
+│   ├── events.json          # Login/logout event records
+│   └── users.json           # User accounts with password hashes
 │
 ├── docs/
 │   └── dashboard-preview.png
 │
-├── tests/
-│
-├── run.py
+├── tests/                   # Unit tests
+├── run.py                   # Entrypoint
 ├── requirements.txt
 └── README.md
 ```
 
 ---
 
-# Application Preview
+# Authentication
 
-The dashboard dynamically displays:
+The app uses a local JSON file (`data/users.json`) with werkzeug password hashes. No public web auth—users are internal and validated server-side.
 
-- Active users
-- Connected machines
-- Current session state
-- Machine activity cards
+Default users:
 
-Each machine is rendered dynamically using Jinja2 templates and Flask routing.
+- `admin` / `admin123`
+- `analyst` / `analyst123`
+- `viewer` / `viewer123`
+
+Session cookie is HTTP-only and secured via Flask secret key.
 
 ---
 
@@ -125,6 +128,12 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
+Set environment variable (optional for production):
+
+```bash
+$env:FLASK_SECRET_KEY = "your-secret-key"
+```
+
 ---
 
 # Run Application
@@ -139,6 +148,8 @@ Open browser:
 http://127.0.0.1:5000
 ```
 
+Root path `/` redirects to `/login`.
+
 ---
 
 # Event Processing Logic
@@ -150,7 +161,11 @@ Supported event types:
 - login
 - logout
 
-The backend updates machine session states dynamically and renders results directly to the dashboard interface.
+The backend updates machine session states dynamically and renders results to Chart.js datasets.
+
+User fields stored per event:
+
+- `date`, `user`, `machine`, `ip`, `method`, `type`
 
 ---
 
@@ -159,8 +174,7 @@ The backend updates machine session states dynamically and renders results direc
 - SQLite integration
 - SQLAlchemy ORM
 - REST API
-- Authentication system
-- Event management panel
+- User management panel
 - Search and filtering
 - Docker support
 - Automated testing
@@ -176,6 +190,18 @@ This project was built as part of a professional Python and Flask backend develo
 - modular backend organization
 - scalable Flask structure
 - professional Git workflow
+- secure local authentication
+- real data-driven charts
+
+---
+
+# Commit Workflow
+
+This project maintains a strict commit policy:
+
+- Conventional Commits (`feat:`, `fix:`, `refactor:`, etc.)
+- Detailed body explaining motivation, scope, and impact
+- References to affected modules when relevant
 
 ---
 

@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+    <h1>Machine Activity Dashboard</h1>
+    <p>Monitoreo de sesiones activas por maquina y usuarios.</p>
+</div>
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+        <h3>Usuarios Activos</h3>
+        <p class="stat-value">{{ stats.total_active_users }}</p>
+    </div>
+
+    <div class="stat-card">
+        <h3>Maquinas Monitoreadas</h3>
+        <p class="stat-value">{{ stats.total_machines }}</p>
+    </div>
+
+    <div class="stat-card">
+        <h3>Sesiones Activas</h3>
+        <p class="stat-value">{{ stats.total_sessions }}</p>
+    </div>
+
+</div>
+
+<div class="activity-section">
+
+    <div class="activity-table-card">
+
+        <div class="section-header">
+            <h2>Actividad Reciente</h2>
+        </div>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Maquina</th>
+                    <th>IP</th>
+                    <th>Metodo</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for event in recent_activity %}
+
+                    <tr>
+
+                        <td>{{ event.user }}</td>
+
+                        <td>{{ event.machine }}</td>
+
+                        <td>{{ event.ip }}</td>
+
+                        <td>{{ event.method }}</td>
+
+                        <td>
+
+                            {% if event.type == "login" %}
+
+                                <span class="status-badge status-active">
+                                    Login
+                                </span>
+
+                            {% elif event.type == "logout" %}
+
+                                <span class="status-badge status-inactive">
+                                    Logout
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-badge status-muted">
+                                    {{ event.type | capitalize }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                {% else %}
+
+                    <tr>
+                        <td colspan="5">Sin actividad reciente.</td>
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<div class="charts-grid">
+
+    <div class="chart-card">
+
+        <div class="section-header">
+            <h2>Actividad de Logins por Dia</h2>
+        </div>
+
+        <canvas id="loginByDayChart"></canvas>
+
+    </div>
+
+    <div class="chart-card">
+
+        <div class="section-header">
+            <h2>Actividad de Maquinas</h2>
+        </div>
+
+        <canvas id="machineActivityChart"></canvas>
+
+    </div>
+
+</div>
+
+<div class="machines-grid">
+
+    {% for machine, users in report.items() %}
+
+        <div class="machine-card">
+
+            <div class="card-header">
+
+                <h2>{{ machine }}</h2>
+
+                {% if users %}
+
+                    <span class="status-badge status-active">
+                        Activa
+                    </span>
+
+                {% else %}
+
+                    <span class="status-badge status-inactive">
+                        Inactiva
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+            <div class="card-body">
+
+                {% if users %}
+
+                    <ul class="users-list">
+
+                        {% set sorted_users = users | sort | list %}
+                        {% for user in sorted_users %}
+                            <li>{{ user }}</li>
+                        {% endfor %}
+
+                    </ul>
+
+                {% else %}
+
+                    <p class="empty-message">
+                        Sin usuarios activos.
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    {% else %}
+
+        <p>No hay maquinas registradas en el reporte.</p>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+
+const loginByDayRaw = {{ login_stats | tojson }};
+const loginByDayCtx = document.getElementById('loginByDayChart');
+
+const loginByDayChart = new Chart(loginByDayCtx, {
+    type: 'bar',
+    data: {
+        labels: loginByDayRaw.labels,
+        datasets: [{
+            label: 'Logins',
+            data: loginByDayRaw.values,
+            backgroundColor: '#34d399',
+            borderRadius: 4
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                labels: {
+                    color: 'white'
+                }
+            }
+        },
+        scales: {
+            x: {
+                ticks: {
+                    color: '#cbd5e1'
+                }
+            },
+            y: {
+                ticks: {
+                    color: '#cbd5e1',
+                    stepSize: 1
+                }
+            }
+        }
+    }
+});
+
+const sessionDistRaw = {{ session_distribution | tojson }};
+const machineActivityCtx = document.getElementById('machineActivityChart');
+
+const machineActivityChart = new Chart(machineActivityCtx, {
+    type: 'doughnut',
+    data: {
+        labels: sessionDistRaw.labels,
+        datasets: [{
+            data: sessionDistRaw.values,
+            backgroundColor: [
+                '#34d399',
+                '#475569'
+            ],
+            borderColor: '#0f172a',
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                labels: {
+                    color: 'white'
+                }
+            }
+        }
+    }
+});
+
+</script>
+
+{% endblock %}
