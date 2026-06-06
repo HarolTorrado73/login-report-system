@@ -128,11 +128,19 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-Set environment variable (optional for production):
+Set environment variable for production:
 
 ```bash
 $env:FLASK_SECRET_KEY = "your-secret-key"
 ```
+
+Load local environment variables with `python-dotenv`:
+
+```bash
+pip install -r requirements.txt
+```
+
+Create a `.env` file from `.env.example`.
 
 ---
 
