@@ -4,25 +4,29 @@
 Machines - CyberGuard SOC
 {% endblock %}
 
+{% block breadcrumb %}
+<a href="{{ url_for('common.dashboard') }}">Dashboard</a> / Machines
+{% endblock %}
+
 {% block content %}
 
 <div class="soc-card" style="margin-bottom:18px;">
     <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;">
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-            <input id="searchInput" type="text" placeholder="Buscar hostname, usuario o IP..." style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px 14px;border-radius:12px;width:260px;outline:none;">
-            <select id="statusFilter" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px 14px;border-radius:12px;outline:none;">
+            <input id="searchInput" type="text" placeholder="Buscar hostname, usuario o IP..." aria-label="Buscar máquinas" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px 14px;border-radius:12px;width:260px;outline:none;">
+            <select id="statusFilter" aria-label="Filtrar por estado" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px 14px;border-radius:12px;outline:none;">
                 <option value="">Todos los estados</option>
                 {% for s in statuses %}
                     <option value="{{ s }}">{{ s }}</option>
                 {% endfor %}
             </select>
-            <select id="osFilter" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px 14px;border-radius:12px;outline:none;">
+            <select id="osFilter" aria-label="Filtrar por sistema operativo" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px 14px;border-radius:12px;outline:none;">
                 <option value="">Todos los SO</option>
                 {% for o in oss %}
                     <option value="{{ o }}">{{ o }}</option>
                 {% endfor %}
             </select>
-            <button id="viewToggle" style="background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.4);color:#38bdf8;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:700;">
+            <button id="viewToggle" aria-label="Cambiar vista" style="background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.4);color:#38bdf8;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:700;">
                 {{ 'Tabla' if view == 'grid' else 'Grid' }}
             </button>
         </div>
@@ -34,7 +38,7 @@ Machines - CyberGuard SOC
 
 <div id="gridView" style="display:{{ 'none' if view == 'table' else 'grid' }};" class="machine-grid">
     {% for m in machines %}
-        <div class="mcard" data-hostname="{{ m.hostname }}" data-user="{{ m.user }}" data-ip="{{ m.ip }}" data-status="{{ m.status }}" data-os="{{ m.os }}">
+        <a href="{{ url_for('machines.machines_page', q=m.hostname) }}" class="mcard" style="text-decoration:none;color:inherit;cursor:pointer;display:block;">
             <div class="mcard-head">
                 <div class="host">
                     <div class="host-name">{{ m.hostname }}</div>
@@ -59,10 +63,10 @@ Machines - CyberGuard SOC
                     <div class="metric-value" style="color:#fbbf24;">{{ m.disk }}</div>
                 </div>
             </div>
-            <button onclick="openMachineDetails({{ m.hostname|tojson }})" style="margin-top:10px;width:100%;padding:8px;border-radius:10px;background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.4);color:#38bdf8;cursor:pointer;font-weight:700;">
+            <button onclick="event.preventDefault();openMachineDetails('{{ m.hostname|tojson }}')" aria-label="Ver detalles de {{ m.hostname }}" style="margin-top:10px;width:100%;padding:8px;border-radius:10px;background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.4);color:#38bdf8;cursor:pointer;font-weight:700;">
                 Ver Detalles
             </button>
-        </div>
+        </a>
     {% else %}
         <div style="color:#64748b;grid-column:1/-1;">No se encontraron máquinas.</div>
     {% endfor %}
@@ -98,7 +102,7 @@ Machines - CyberGuard SOC
                         <td><span style="color:{{ '#f87171' if m.risk == 'High' else '#fbbf24' if m.risk == 'Medium' else '#34d399' }};font-weight:800;">{{ m.risk }}</span></td>
                         <td style="font-family:monospace;">{{ m.last_connection or '-' }}</td>
                         <td>
-                            <button onclick='openMachineDetails({{ m.hostname|tojson }})' style="padding:6px 12px;border-radius:10px;background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.4);color:#38bdf8;cursor:pointer;font-weight:700;">
+                            <button onclick='openMachineDetails("{{ m.hostname }}")' aria-label="Ver detalles de {{ m.hostname }}" style="padding:6px 12px;border-radius:10px;background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.4);color:#38bdf8;cursor:pointer;font-weight:700;">
                                 Detalles
                             </button>
                         </td>
@@ -115,7 +119,7 @@ Machines - CyberGuard SOC
     <div class="soc-card" style="width:min(720px, 95vw);max-height:88vh;overflow-y:auto;padding:22px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
             <h2 style="margin:0;">Detalle del endpoint</h2>
-            <button onclick="closeMachineModal()" style="background:transparent;border:none;color:#e2e8f0;font-size:22px;cursor:pointer;">×</button>
+            <button onclick="closeMachineModal()" aria-label="Cerrar modal" style="background:transparent;border:none;color:#e2e8f0;font-size:22px;cursor:pointer;">×</button>
         </div>
         <div id="modalBody">
             <div style="color:#94a3b8;">Cargando...</div>
@@ -128,7 +132,6 @@ Machines - CyberGuard SOC
 {% block scripts %}
 <script>
 const machinesData = {{ all_machines | tojson }};
-
 document.getElementById('viewToggle').addEventListener('click', () => {
     const gv = document.getElementById('gridView');
     const tv = document.getElementById('tableView');
@@ -202,6 +205,10 @@ function closeMachineModal() {
 
 document.getElementById('machineModal').addEventListener('click', (e) => {
     if (e.target.id === 'machineModal') closeMachineModal();
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMachineModal();
 });
 </script>
 {% endblock %}

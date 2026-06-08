@@ -1,6 +1,6 @@
 from collections import defaultdict, OrderedDict
 
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect
 
 from app.services.report_service import (
     generate_sorted_report,
@@ -11,6 +11,11 @@ from app.services.report_service import (
 )
 
 common = Blueprint("common", __name__)
+
+
+@common.route("/")
+def index():
+    return redirect("/dashboard")
 
 
 @common.route("/dashboard")

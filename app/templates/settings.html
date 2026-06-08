@@ -4,16 +4,41 @@
 Settings - CyberGuard SOC
 {% endblock %}
 
+{% block breadcrumb %}
+<a href="{{ url_for('common.dashboard') }}">Dashboard</a> / Settings
+{% endblock %}
+
 {% block content %}
+
+{% if user_can(session.get('user_id') or 0, 'settings:read') %}
+<div class="stats-bar">
+  <a href="{{ url_for('settings.settings_page') }}" class="soc-card soc-card--glow-cyan" style="text-decoration:none;cursor:pointer;">
+    <div class="card-title"><h3>Permisos</h3></div>
+    <div class="metric">{{ permissions|length }}</div>
+  </a>
+  <a href="{{ url_for('settings.settings_page') }}" class="soc-card soc-card--glow-blue" style="text-decoration:none;cursor:pointer;">
+    <div class="card-title"><h3>Roles</h3></div>
+    <div class="metric">{{ roles|length }}</div>
+  </a>
+  <div class="soc-card soc-card--glow-green">
+    <div class="card-title"><h3>MFA</h3></div>
+    <div class="metric">{{ 'Activado' if mfa_enabled else 'Desactivado' }}</div>
+  </div>
+</div>
+
+<style>
+.stats-bar a:hover { transform: translateY(-4px); }
+</style>
+
 <div class="grid-2">
   <div class="soc-card">
     <div class="card-title"><h3>General</h3></div>
     <form method="POST" action="{{ url_for('settings.settings_page') }}" style="display:flex;flex-direction:column;gap:12px;">
       <input type="hidden" name="section" value="general">
       <label style="font-size:13px;color:#94a3b8;">Nombre organización</label>
-      <input name="org_name" value="{{ settings.general.org_name }}" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px;border-radius:10px;">
+      <input name="org_name" value="{{ settings.general.org_name if settings is defined else 'CyberGuard' }}" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px;border-radius:10px;">
       <label style="font-size:13px;color:#94a3b8;">Zona horaria</label>
-      <input name="timezone" value="{{ settings.general.timezone }}" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px;border-radius:10px;">
+      <input name="timezone" value="{{ settings.general.timezone if settings is defined else 'America/Bogota' }}" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px;border-radius:10px;">
       <button type="submit" style="padding:10px;border-radius:10px;background:linear-gradient(90deg,#1d4ed8,#0ea5e9);border:none;color:white;font-weight:700;cursor:pointer;">Guardar General</button>
     </form>
   </div>
@@ -22,13 +47,10 @@ Settings - CyberGuard SOC
     <div class="card-title"><h3>Seguridad</h3></div>
     <form method="POST" action="{{ url_for('settings.settings_page') }}" style="display:flex;flex-direction:column;gap:12px;">
       <input type="hidden" name="section" value="security">
-      <label style="font-size:13px;color:#94a3b8;">Política de contraseña</label>
-      <select name="password_policy" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px;border-radius:10px;">
-        <option value="standard" {{ 'selected' if settings.security.password_policy == 'standard' }}>Standard</option>
-        <option value="strict" {{ 'selected' if settings.security.password_policy == 'strict' }}>Strict</option>
-      </select>
-      <label style="font-size:13px;color:#94a3b8;">Timeout (min)</label>
-      <input type="number" name="session_timeout" value="{{ settings.security.session_timeout }}" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px;border-radius:10px;">
+      <label style="font-size:13px;color:#94a3b8;">Intentos máximos</label>
+      <input type="number" name="max_failed_attempts" value="{{ settings.security.max_failed_attempts if settings is defined else 5 }}" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px;border-radius:10px;">
+      <label style="font-size:13px;color:#94a3b8;">Bloqueo (minutos)</label>
+      <input type="number" name="lockout_minutes" value="{{ settings.security.lockout_minutes if settings is defined else 15 }}" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px;border-radius:10px;">
       <button type="submit" style="padding:10px;border-radius:10px;background:linear-gradient(90deg,#1d4ed8,#0ea5e9);border:none;color:white;font-weight:700;cursor:pointer;">Guardar Seguridad</button>
     </form>
   </div>
@@ -43,7 +65,7 @@ Settings - CyberGuard SOC
         <option value="false" {{ 'selected' if not settings.mfa.enabled else '' }}>No</option>
       </select>
       <label style="font-size:13px;color:#94a3b8;">Métodos (coma separado)</label>
-      <input name="methods" value="{{ settings.mfa.methods|join(', ') }}" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px;border-radius:10px;">
+      <input name="methods" value="{{ settings.mfa.methods|join(', ') if settings is defined else 'TOTP, SMS' }}" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px;border-radius:10px;">
       <button type="submit" style="padding:10px;border-radius:10px;background:linear-gradient(90deg,#1d4ed8,#0ea5e9);border:none;color:white;font-weight:700;cursor:pointer;">Guardar MFA</button>
     </form>
   </div>
@@ -58,11 +80,17 @@ Settings - CyberGuard SOC
         <option value="false" {{ 'selected' if not settings.notifications.email_alerts else '' }}>Deshabilitadas</option>
       </select>
       <label style="font-size:13px;color:#94a3b8;">Webhook Slack</label>
-      <input name="slack_webhook" value="{{ settings.notifications.slack_webhook }}" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px;border-radius:10px;">
+      <input name="slack_webhook" value="{{ settings.notifications.slack_webhook if settings is defined else '' }}" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px;border-radius:10px;">
       <label style="font-size:13px;color:#94a3b8;">Umbral</label>
-      <input name="threshold" value="{{ settings.notifications.threshold }}" style="background:rgba(15,25,45,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px;border-radius:10px;">
+      <input name="threshold" value="{{ settings.notifications.threshold if settings is defined else 'medium' }}" style="background:rgba(15,25 ,0.6);border:1px solid rgba(120,180,255,0.2);color:#e2e8f0;padding:10px;border-radius:10px;">
       <button type="submit" style="padding:10px;border-radius:10px;background:linear-gradient(90deg,#1d4ed8,#0ea5e9);border:none;color:white;font-weight:700;cursor:pointer;">Guardar Notificaciones</button>
     </form>
   </div>
 </div>
+{% else %}
+<div class="soc-card" style="padding:18px;">
+  <p style="color:#94a3b8;">No tienes permiso para ver configuraciones.</p>
+</div>
+{% endif %}
+
 {% endblock %}

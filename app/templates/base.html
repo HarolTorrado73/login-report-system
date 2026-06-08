@@ -3,115 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>{% block title %}{% endblock %}</title>
-
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/soc.css') }}"
-    >
-
+    <title>{% block title %}{% endblock %} - CyberGuard SOC</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/soc.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-
     <div class="soc-root">
-
-        <aside class="soc-sidebar">
-
-            <div class="brand">
-                <div class="brand-mark">C</div>
-                <div class="brand-name">CYBERGUARD</div>
-            </div>
-
-            <nav class="nav">
-
-                <a href="{{ url_for('common.dashboard') }}" class="{% if request.endpoint == 'common.dashboard' %}active{% endif %}">
-                    Dashboard
-                </a>
-
-                <a href="{{ url_for('machines.machines_page') }}" class="{% if request.endpoint and request.endpoint.startswith('machines') %}active{% endif %}">
-                    Machines
-                </a>
-
-                <a href="{{ url_for('sessions.sessions_page') }}" class="{% if request.endpoint and request.endpoint.startswith('sessions') %}active{% endif %}">
-                    Sessions
-                </a>
-
-                <a href="{{ url_for('reports.reports_page') }}" class="{% if request.endpoint and request.endpoint.startswith('reports') %}active{% endif %}">
-                    Reports
-                </a>
-
-                <a href="{{ url_for('settings.settings_page') }}" class="{% if request.endpoint and request.endpoint.startswith('settings') %}active{% endif %}">
-                    Settings
-                </a>
-
-            </nav>
-
-            <div class="user-chip">
-
-                <div>
-                    <div class="name">{{ user | default('Guest') }}</div>
-                    <div class="role">{{ role | default('viewer') | capitalize }}</div>
-                </div>
-
-                {% if user %}
-                    <a href="{{ url_for('auth.logout') }}" class="logout">
-                        Logout
-                    </a>
-                {% endif %}
-
-            </div>
-
-        </aside>
-
-        <header class="soc-topbar">
-
-            <div class="status-dot">
-                <span>Security Operations Center</span>
-            </div>
-
-            <div>
-                {% if user %}
-                    <span style="font-size:13px;color:#94a3b8;">
-                        {{ user }} • {{ role | capitalize }}
-                    </span>
-                {% else %}
-                    <a href="{{ url_for('auth.login') }}" style="font-size:13px;color:#38bdf8;">
-                        Iniciar Sesion
-                    </a>
-                {% endif %}
-            </div>
-
-        </header>
-
-        <main class="main-content">
-            {% block content %}
-            {% endblock %}
-        </main>
-
+      <aside class="soc-sidebar" role="navigation" aria-label="Main navigation">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">C</div>
+          <div class="brand-name">CyberGuard</div>
+        </div>
+        <nav class="nav">
+          <a href="{{ url_for('common.dashboard') }}" aria-current="{% if request.endpoint == 'common.dashboard' %}page{% endif %}">Dashboard</a>
+          <a href="{{ url_for('machines.machines_page') }}" aria-current="{% if request.endpoint and request.endpoint.startswith('machines') %}page{% endif %}">Machines</a>
+          <a href="/alerts" aria-current="{% if request.endpoint and request.endpoint.startswith('alerts') %}page{% endif %}">Alerts</a>
+          <a href="/reports" aria-current="{% if request.endpoint and request.endpoint.startswith('reports') %}page{% endif %}">Reports</a>
+          <a href="/settings" aria-current="{% if request.endpoint and request.endpoint.startswith('settings') %}page{% endif %}">Settings</a>
+        </nav>
+        <div class="user-chip">
+          <div>
+            <div class="name">{{ user | default('Guest') }}</div>
+            <div class="role">{{ role | default('viewer') | capitalize }}</div>
+          </div>
+          {% if user %}
+            <a href="{{ url_for('auth.logout') }}" class="logout">Salir</a>
+          {% endif %}
+        </div>
+      </aside>
+      <header class="soc-topbar">
+        <div class="status-dot"><span>Security Operations Center</span></div>
+        <div tabindex="0" role="search" aria-label="Global search" id="globalSearchTrigger" style="cursor:pointer;color:#38bdf8;">Ctrl K</div>
+      </header>
+      <main id="mainContent" class="main-content" role="main" aria-live="polite">
+        <nav aria-label="breadcrumb" style="margin-bottom:14px;color:#94a3b8;font-size:12px;">
+          <span>CyberGuard</span> / <span>{% block breadcrumb %}{% endblock %}</span>
+        </nav>
+        {% block content %}{% endblock %}
+      </main>
     </div>
-
     {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="toast-layer">
-                {% for category, message in messages %}
-                    <div class="toast">
-                        <strong>{{ category | capitalize }}:</strong> {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
+      {% if messages %}
+        <div class="toast-layer" aria-live="assertive">
+          {% for category, message in messages %}
+            <div class="toast" role="alert"><strong>{{ category | capitalize }}:</strong> {{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
     {% endwith %}
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ url_for('static', filename='js/soc.js') }}"></script>
-
-{% block scripts %}
-{% endblock %}
-
-</body>
+    {% block scripts %}{% endblock %}
+  </body>
 </html>

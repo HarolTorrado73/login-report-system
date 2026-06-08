@@ -4,62 +4,70 @@
 SOC Dashboard
 {% endblock %}
 
+{% block breadcrumb %}
+Dashboard
+{% endblock %}
+
 {% block content %}
 
-<!-- STATS BAR -->
+<!-- STATS BAR CLICKEABLE -->
 <div class="stats-bar">
-
-    <div class="soc-card soc-card--glow-cyan">
+    <a href="{{ url_for('machines.machines_page') }}" class="soc-card soc-card--glow-cyan" style="text-decoration:none;cursor:pointer;transition:transform 0.2s;">
         <div class="card-title">
             <h3>Security Score</h3>
             <span class="pill">Global</span>
         </div>
         <div class="metric">{{ stats.total_active_users * 10 + 60 }}/100</div>
-        <div class="metric-sub">Posture optima</div>
-    </div>
+        <div class="metric-sub">Click para ver máquinas</div>
+    </a>
 
-    <div class="soc-card soc-card--glow-green">
+    <a href="{{ url_for('sessions.sessions_page', status='active') }}" class="soc-card soc-card--glow-green" style="text-decoration:none;cursor:pointer;transition:transform 0.2s;">
         <div class="card-title">
             <h3>Active Sessions</h3>
             <span class="pill">Live</span>
         </div>
         <div class="metric">{{ stats.total_sessions }}</div>
-        <div class="metric-sub">Sin anomalias detectadas</div>
-    </div>
+        <div class="metric-sub">Click para ver sesiones activas</div>
+    </a>
 
-    <div class="soc-card soc-card--glow-blue">
+    <a href="{{ url_for('machines.machines_page', status='Online') }}" class="soc-card soc-card--glow-blue" style="text-decoration:none;cursor:pointer;transition:transform 0.2s;">
         <div class="card-title">
             <h3>Endpoints Online</h3>
             <span class="pill">Protected</span>
         </div>
         <div class="metric">{{ stats.total_machines }}</div>
-        <div class="metric-sub">Monitoreo activo 24/7</div>
-    </div>
+        <div class="metric-sub">Click para ver endpoints</div>
+    </a>
 
-    <div class="soc-card soc-card--glow-red">
+    <a href="{{ url_for('reports.reports_page') }}" class="soc-card soc-card--glow-red" style="text-decoration:none;cursor:pointer;transition:transform 0.2s;">
         <div class="card-title">
             <h3>Threats Blocked</h3>
             <span class="pill">Today</span>
         </div>
         <div class="metric">{{ stats.total_sessions * 3 }}</div>
-        <div class="metric-sub">Ultimas 24 horas</div>
-    </div>
-
+        <div class="metric-sub">Click para ver reportes</div>
+    </a>
 </div>
+
+<style>
+.stats-bar a:hover { transform: translateY(-4px); }
+</style>
 
 <!-- MAIN GRID -->
 <div class="grid-2" style="margin-bottom:18px;">
 
-    <div class="soc-card">
+    <!-- THREAT MAP -->
+    <a href="{{ url_for('reports.reports_page') }}" class="soc-card" style="text-decoration:none;cursor:pointer;display:block;">
         <div class="card-title">
             <h3>Global Threat Map</h3>
-            <span class="pill">Realtime</span>
+            <span class="pill">Click para analytics</span>
         </div>
         <div class="map-panel">
             <canvas id="socCanvas" class="map-canvas"></canvas>
         </div>
-    </div>
+    </a>
 
+    <!-- LIVE EVENTS FEED -->
     <div class="soc-card">
         <div class="card-title">
             <h3>Live Security Events</h3>
@@ -67,7 +75,7 @@ SOC Dashboard
         </div>
         <div class="feed">
             {% for event in recent_activity %}
-                <div class="feed-item">
+                <a href="{{ url_for('machines.machines_page', q=event.machine) }}" class="feed-item" style="text-decoration:none;cursor:pointer;color:inherit;display:flex;">
                     <div class="left">
                         <span class="badge-sm {{ 'success' if event.type == 'login' else 'danger' }}">
                             {{ event.type | upper }}
@@ -81,7 +89,7 @@ SOC Dashboard
                         <div style="font-size:12px;color:#cbd5e1;">{{ event.machine }}</div>
                         <div style="font-size:11px;color:#64748b;">{{ event.ip }}</div>
                     </div>
-                </div>
+                </a>
             {% else %}
                 <div class="feed-item">
                     <div style="color:#64748b;font-size:13px;">Sin eventos recientes.</div>
@@ -92,38 +100,57 @@ SOC Dashboard
 
 </div>
 
+<!-- TIMELINE -->
+<div class="soc-card" style="margin-bottom:18px;">
+    <div class="card-title">
+        <h3>Event Timeline</h3>
+        <span class="pill">Últimos eventos</span>
+    </div>
+    <div class="timeline">
+        {% for event in recent_activity %}
+            <a href="{{ url_for('sessions.sessions_page', q=event.user) }}" class="tl-item" style="text-decoration:none;color:inherit;">
+                <div class="tl-dot"></div>
+                <div class="tl-card">
+                    <div class="tl-time">{{ event.date }}</div>
+                    <div class="tl-title">{{ event.user }} - {{ event.machine }}</div>
+                    <div style="font-size:12px;color:#94a3b8;">{{ event.type | upper }} • {{ event.ip }} • {{ event.method }}</div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+</div>
+
 <!-- CHARTS -->
 <div class="grid-2" style="margin-bottom:18px;">
 
-    <div class="soc-card">
+    <a href="{{ url_for('reports.reports_page') }}" class="soc-card" style="text-decoration:none;cursor:pointer;display:block;">
         <div class="card-title">
-            <h3>Threat Activity by Country</h3>
-            <span class="pill">Analytics</span>
+            <h3>Threat Activity</h3>
+            <span class="pill">Click para reportes</span>
         </div>
         <canvas id="threatCountryChart"></canvas>
-    </div>
+    </a>
 
-    <div class="soc-card">
+    <a href="{{ url_for('reports.reports_page') }}" class="soc-card" style="text-decoration:none;cursor:pointer;display:block;">
         <div class="card-title">
-            <h3>Session Risk Distribution</h3>
-            <span class="pill">Risk</span>
+            <h3>Session Risk</h3>
+            <span class="pill">Click para analytics</span>
         </div>
         <canvas id="riskDistChart"></canvas>
-    </div>
+    </a>
 
 </div>
 
-<!-- MACHINES -->
+<!-- MACHINES GRID -->
 <div class="soc-card" style="margin-bottom:18px;">
-
     <div class="card-title">
         <h3>Monitored Endpoints</h3>
-        <span class="pill">{{ stats.total_machines }} Active</span>
+        <a href="{{ url_for('machines.machines_page') }}" class="pill" style="text-decoration:none;">Ver todos →</a>
     </div>
 
     <div class="machine-grid">
         {% for machine, users in report.items() %}
-            <div class="mcard">
+            <a href="{{ url_for('machines.machines_page', q=machine) }}" class="mcard" style="text-decoration:none;color:inherit;cursor:pointer;display:block;">
                 <div class="mcard-head">
                     <div class="host">
                         <div class="host-name">{{ machine }}</div>
@@ -157,12 +184,11 @@ SOC Dashboard
                     <span>Windows 11 Pro</span>
                     <span>Antivirus: Active</span>
                 </div>
-            </div>
+            </a>
         {% else %}
-            <div style="color:#64748b;">No hay maquinas registradas.</div>
+            <div style="color:#64748b;">No hay máquinas registradas.</div>
         {% endfor %}
     </div>
-
 </div>
 
 {% endblock %}

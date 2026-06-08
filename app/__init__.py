@@ -19,6 +19,8 @@ def create_app():
     from app.sessions.routes import sessions
     from app.reports.routes import reports
     from app.settings.routes import settings as settings_bp
+    from app.alerts.routes import alerts
+    from app.services.rbac_service import user_can
 
     app.register_blueprint(auth)
     app.register_blueprint(common)
@@ -26,5 +28,7 @@ def create_app():
     app.register_blueprint(sessions)
     app.register_blueprint(reports)
     app.register_blueprint(settings_bp)
+    app.register_blueprint(alerts)
 
+    app.jinja_env.globals["user_can"] = user_can
     return app
